@@ -1,9 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import Product from "../models/product";
-import { randomUUID } from "crypto";
-import { BadRequestError } from "../errors/bad-request";
-import { InternalServerError } from "../errors/internal";
-
+import { Request, Response, NextFunction } from 'express';
+import { randomUUID } from 'crypto';
+import Product from '../models/product';
+import BadRequestError from '../errors/bad-request';
+import InternalServerError from '../errors/internal';
 
 enum paymentType {
   'card',
@@ -19,33 +18,36 @@ interface IOrder {
   items: [string]
 }
 
-export async function postOrder (req: Request, res: Response, next: NextFunction) {
+export default function postOrder(req: Request, res: Response, next: NextFunction) {
   const order: IOrder = req.body;
   let price = 0;
 
-  for (let item of order.items) {
-    try {
-      const dbItem = await Product.findById(item, {price: 1, _id: 1});
-      if (!dbItem) {
-        return next(new BadRequestError(`Товар с id ${item} не найден`))
-      }
-      if (!dbItem.price) {
-        return next(new BadRequestError(`Товар с id ${item} бесценен`));
-      }
-      price += dbItem.price;
-    }
-    catch (error) {
-      console.log(error)
-      return next(new InternalServerError());
-    }
-  }
+  const promises = order.items.map((item) => Product.findById(item, { _id: 1, price: 1 }));
 
-  if (price !== order.total) {
-      return next(new BadRequestError('Неверная стоимость заказа'));
-  }
+  Promise.all(promises)
+    .then((items) => {
+      /* eslint-disable-next-line */
+      for (const item of items) {
+        if (!item) {
+          next(new BadRequestError('Товар не найден'));
+          return;
+        }
+        if (!item.price) {
+          next(new BadRequestError(`Товар с id ${item} бесценен`));
+          return;
+        }
+        price += item.price;
+      }
 
-  res.status(200).send({
-    id: randomUUID(),
-    total: order.total
-  })
+      if (price !== order.total) {
+        next(new BadRequestError('Неверная стоимость заказа'));
+        return;
+      }
+
+      res.status(200).send({
+        id: randomUUID(),
+        total: order.total,
+      });
+    })
+    .catch((error) => next(new InternalServerError(error)));
 }

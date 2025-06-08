@@ -10,11 +10,11 @@ const productSchema = Joi.object({
   price: Joi.number(),
   image: {
     fileName: Joi.string().required(),
-    originalName: Joi.string().required()
-  }
+    originalName: Joi.string().required(),
+  },
 });
 
-export const validateProduct = celebrate({[Segments.BODY]: productSchema})
+export const validateProduct = celebrate({ [Segments.BODY]: productSchema });
 
 // Order
 
@@ -24,8 +24,7 @@ const orderSchema = Joi.object({
   phone: Joi.string().required(),
   address: Joi.string().required(),
   total: Joi.number().required(),
-  items: Joi.array().items(Joi.string().required())
-})
+  items: Joi.array().items(Joi.string().required()),
+});
 
-
-export const validateOrder = celebrate({[Segments.BODY]: orderSchema});
+export const validateOrder = celebrate({ [Segments.BODY]: orderSchema });

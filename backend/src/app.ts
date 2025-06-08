@@ -1,13 +1,13 @@
-import 'dotenv/config'
+import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
+import { errors } from 'celebrate';
+import cors from 'cors';
 import productRouter from './routes/product';
 import orderRouter from './routes/order';
 import { requestLogger, errorLogger } from './middlewares/logger';
-import { errorHandler } from './middlewares/error-handler';
-import { errors } from 'celebrate';
-import cors from 'cors';
+import errorHandler from './middlewares/error-handler';
 
 const { PORT = 3000 } = process.env;
 const { DB_ADDRESS = 'mongodb://127.0.0.1:27017/weblarek' } = process.env;
@@ -28,11 +28,10 @@ app.use(errorHandler);
 
 app.listen(PORT, async () => {
   try {
-    await mongoose.connect(DB_ADDRESS)
-  }
-  catch (error) {
+    await mongoose.connect(DB_ADDRESS);
+  } catch (error) {
     console.log(error);
   }
 
-  console.log(`listening on port ${PORT}`)
-})
+  console.log(`listening on port ${PORT}`);
+});

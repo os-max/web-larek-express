@@ -1,7 +1,7 @@
-import { HTTPError } from "./base";
+import HTTPError from './base';
 
-export class BadRequestError extends HTTPError {
-  constructor (message: string, status=400) {
+export default class BadRequestError extends HTTPError {
+  constructor(message: string, status = 400) {
     super(message, status);
   }
 }
