@@ -8,6 +8,7 @@ import productRouter from './routes/product';
 import orderRouter from './routes/order';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import errorHandler from './middlewares/error-handler';
+import badRouteHandler from './middlewares/bad-route-handler';
 
 const { PORT = 3000 } = process.env;
 const { DB_ADDRESS = 'mongodb://127.0.0.1:27017/weblarek' } = process.env;
@@ -22,6 +23,7 @@ app.use(requestLogger);
 app.use('/product', productRouter);
 app.use('/order', orderRouter);
 
+app.use(badRouteHandler);
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);

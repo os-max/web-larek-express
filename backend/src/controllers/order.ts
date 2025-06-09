@@ -18,7 +18,7 @@ interface IOrder {
   items: [string]
 }
 
-export default function postOrder(req: Request, res: Response, next: NextFunction) {
+export default function createOrder(req: Request, res: Response, next: NextFunction) {
   const order: IOrder = req.body;
   let price = 0;
 
